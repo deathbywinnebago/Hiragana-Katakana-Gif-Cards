@@ -1,0 +1,10 @@
+日本, Japan
+こんにちは, Hello
+さようなら, Goodbye
+hello, hello
+no, no
+yes, yes
+maybe, maybe
+kinda, kinda
+howdy, howdy
+terrible, terrible
