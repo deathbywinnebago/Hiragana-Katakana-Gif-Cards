@@ -13,18 +13,22 @@ body, html {
 .card {
     font-size: 24px;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     background: white;
     border: 1px solid #ccc;
     border-radius: 8px;
 }
 input[type="text"] {
-    padding: 10px;
+    padding: 13px;
     margin-right: 5px;
+    border-radius: 8px;
     width: 300px;
+    border: 1px solid #ccc;
 }
 button {
-    padding: 10px 20px;
+    padding: 13px 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
 #status {
@@ -35,8 +39,24 @@ button {
     color: red;
     border-color: red;
 }
-#correct-count, #total-count {
+#correct-count, #total-count #correct-percent {
     margin-top: 10px;
     font-size: 16px;
     color: #333;
+}
+#gif-container {
+    width: 420px;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px; /* Space between the GIF and the card */
+}
+
+#anime-gif {
+    height: auto;
+    width: auto;
+    max-width: unset; /* Ensures that the GIF is not limited by default maximum width */
 }

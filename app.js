@@ -3,6 +3,12 @@ let currentCardIndex = 0;
 let attempts = 0;
 let correctCount = 0;
 let totalCount = 0;
+let correctPercent = 0;
+
+function loadAnimeGif() {
+    const gifIndex = Math.floor(Math.random() * 40) + 1; // Assuming GIF filenames are from 1.gif to 40.gif
+    document.getElementById('anime-gif').src = `gifs/${gifIndex}.gif`; // Update the path accordingly
+}
 
 function showNextCard() {
     if (flashCards.length === 0) {
@@ -17,6 +23,9 @@ function showNextCard() {
 
     totalCount++; // Increment the total count each time a new card is presented
     document.getElementById('total-count').textContent = "Total Cards Presented: " + totalCount;
+    document.getElementById('correct-percent').textContent = "% correct: " + ((correctCount / totalCount) * 100).toFixed(1);
+
+    loadAnimeGif();
 }
 
 function checkAnswer() {

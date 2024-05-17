@@ -8,12 +8,16 @@
 </head>
 <body>
     <div id="app">
+            <div id="gif-container" style="width: 420px; height: 150px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+        <img id="anime-gif" src="" alt="Anime GIF" style="height: auto; width: auto; max-width: unset;">
+    </div>
         <div id="card" class="card"></div>
         <input type="text" id="answer" placeholder="Type your answer here..." autofocus>
         <button id="submit">Submit</button>
         <div id="status"></div>
         <div id="correct-count">Correct Answers: 0</div>
         <div id="total-count">Total Cards Presented: 0</div>
+        <div id="correct-percent">% correct: 0</div>
     </div>
     <script src="app.js"></script>
 </body>
