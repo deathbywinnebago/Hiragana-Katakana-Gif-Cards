@@ -1,5 +1,5 @@
 body, html {
-    font-family: Arial, sans-serif;
+    font-family: "Arial", sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,14 +10,7 @@ body, html {
 #app {
     text-align: center;
 }
-.card {
-    font-size: 24px;
-    padding: 20px;
-    margin-bottom: 10px;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-}
+
 input[type="text"] {
     padding: 13px;
     margin-right: 5px;
@@ -49,14 +42,32 @@ button {
     height: 150px;
     overflow: hidden;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px; /* Space between the GIF and the card */
+    position: relative;
+    margin-bottom: 10px;
+    background: black; /* Fallback background if GIF fails to load */
 }
 
 #anime-gif {
-    height: auto;
-    width: auto;
-    max-width: unset; /* Ensures that the GIF is not limited by default maximum width */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the GIF covers the container fully */
+    z-index: 0;
+}
+
+#card {
+    position: absolute;
+    font-family: "Rampart One", sans-serif!important;
+    z-index: 1;
+    color: white;
+    font-size: 64px;
+  /*  -webkit-text-stroke: 2px white; */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for text readability */
 }
