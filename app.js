@@ -1,13 +1,51 @@
+// --- Full app.js updated for adaptive learning, 3-attempt limit, input locking, and input focusing ---
+
 let flashCards = [];
 let currentCardIndex = 0;
 let attempts = 0;
 let correctCount = 0;
 let totalCount = 0;
 let correctPercent = 0;
+let stats = {}; // character -> { shown: number, correct: number }
+
+// Load stats from sessionStorage if they exist
+if (sessionStorage.getItem('flashcardStats')) {
+    stats = JSON.parse(sessionStorage.getItem('flashcardStats'));
+}
+
+// Save stats back to sessionStorage
+function saveStats() {
+    sessionStorage.setItem('flashcardStats', JSON.stringify(stats));
+}
 
 function loadAnimeGif() {
-    const gifIndex = Math.floor(Math.random() * 40) + 1; // Assuming GIF filenames are from 1.gif to 40.gif
-    document.getElementById('anime-gif').src = `gifs/${gifIndex}.gif`; // Update the path accordingly
+    const gifIndex = Math.floor(Math.random() * 40) + 1;
+    document.getElementById('anime-gif').src = `gifs/${gifIndex}.gif`;
+}
+
+function selectNextCard() {
+    let weightedList = [];
+
+    flashCards.forEach((card, index) => {
+        const char = card.question;
+        const stat = stats[char] || { shown: 0, correct: 0 };
+        const accuracy = stat.shown > 0 ? stat.correct / stat.shown : 0;
+
+        let weight = 1;
+        if (stat.shown === 0) {
+            weight = 5;
+        } else if (accuracy < 0.6) {
+            weight = 4;
+        } else if (accuracy < 0.8) {
+            weight = 2;
+        }
+
+        for (let i = 0; i < weight; i++) {
+            weightedList.push(index);
+        }
+    });
+
+    currentCardIndex = weightedList[Math.floor(Math.random() * weightedList.length)];
 }
 
 function showNextCard() {
@@ -15,13 +53,19 @@ function showNextCard() {
         document.getElementById('card').textContent = 'Loading cards...';
         return;
     }
-    currentCardIndex = Math.floor(Math.random() * flashCards.length);
+
+    selectNextCard();
+
     document.getElementById('card').textContent = flashCards[currentCardIndex].question;
-    document.getElementById('answer').value = '';
+    const answerInput = document.getElementById('answer');
+    answerInput.value = '';
+    answerInput.disabled = false;
+    answerInput.focus();
+    answerInput.classList.remove('input-error');
     document.getElementById('status').textContent = '';
     attempts = 0;
 
-    totalCount++; // Increment the total count each time a new card is presented
+    totalCount++;
     document.getElementById('total-count').textContent = "Total Cards Presented: " + totalCount;
     document.getElementById('correct-percent').textContent = "% correct: " + ((correctCount / totalCount) * 100).toFixed(1);
 
@@ -31,48 +75,55 @@ function showNextCard() {
 function checkAnswer() {
     const answerInput = document.getElementById('answer');
     const userAnswer = answerInput.value.trim();
-    if (userAnswer.toLowerCase() === flashCards[currentCardIndex].answer.toLowerCase()) {
-        correctCount++; // Increment correct count on correct answer
+    const correctAnswer = flashCards[currentCardIndex].answer.trim();
+    const char = flashCards[currentCardIndex].question;
+
+    if (!stats[char]) {
+        stats[char] = { shown: 0, correct: 0 };
+    }
+
+    stats[char].shown++;
+
+    if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+        correctCount++;
+        stats[char].correct++;
         document.getElementById('correct-count').textContent = "Correct Answers: " + correctCount;
-        answerInput.classList.remove('input-error'); // Remove error styling on correct answer
+        answerInput.classList.remove('input-error');
         showNextCard();
     } else {
         attempts++;
-        // answerInput.classList.add('input-error'); // Add error styling on wrong answer
+        answerInput.classList.add('input-error');
         if (attempts >= 3) {
-            document.getElementById('status').textContent = "Correct answer: " + flashCards[currentCardIndex].answer;
-            setTimeout(() => {
-                showNextCard();
-                answerInput.classList.remove('input-error'); // Reset the error state for new card
-            }, 2000); // Shows the next card after 2 seconds
+            document.getElementById('status').textContent = `Out of attempts! Correct answer was: ${correctAnswer}`;
+            answerInput.disabled = true;
+            setTimeout(showNextCard, 1500);
         } else {
-            document.getElementById('status').textContent = "Try again!";
+            document.getElementById('status').textContent = `Try again! Attempts: ${attempts}`;
         }
     }
+
+    saveStats();
 }
 
-function loadFlashCards() {
+function startApp() {
     fetch('data.txt')
         .then(response => response.text())
         .then(text => {
-            const lines = text.split(/\r?\n/); // Splitting by new line, handling both Unix and Windows endings
-            flashCards = lines.map(line => {
-                const parts = line.split(','); // Change here if using a different delimiter
-                return { question: parts[0].trim(), answer: parts[1].trim() };
+            flashCards = text.trim().split('\n').map(line => {
+                const [question, answer] = line.split(',').map(part => part.trim());
+                return { question, answer };
             });
+
             showNextCard();
-        })
-        .catch(error => {
-            document.getElementById('card').textContent = 'Failed to load cards.';
-            console.error('Error loading the flash cards:', error);
         });
 }
 
 document.getElementById('submit').addEventListener('click', checkAnswer);
-document.getElementById('answer').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
+document.getElementById('answer').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
         checkAnswer();
     }
 });
 
-window.onload = loadFlashCards;
+window.onload = startApp;
