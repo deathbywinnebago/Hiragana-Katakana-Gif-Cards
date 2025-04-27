@@ -1,4 +1,3 @@
-// --- Full app.js updated for adaptive learning, 3-attempt limit, input locking, and input focusing ---
 
 let flashCards = [];
 let currentCardIndex = 0;
@@ -8,12 +7,10 @@ let totalCount = 0;
 let correctPercent = 0;
 let stats = {}; // character -> { shown: number, correct: number }
 
-// Load stats from sessionStorage if they exist
 if (sessionStorage.getItem('flashcardStats')) {
     stats = JSON.parse(sessionStorage.getItem('flashcardStats'));
 }
 
-// Save stats back to sessionStorage
 function saveStats() {
     sessionStorage.setItem('flashcardStats', JSON.stringify(stats));
 }
